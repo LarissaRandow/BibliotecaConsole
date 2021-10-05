@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using ConsoleAPI.Models;
 using Newtonsoft.Json;
@@ -19,6 +20,25 @@ namespace ConsoleAPI.Services
             cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        public async Task PostLivroAsync(string nome, int generoId)
+        {
+            Livro livro = new Livro
+            {
+                Id = 0,
+                Nome = nome,
+                Reservado = false,
+                Genero = generoId
+            };
+            JsonContent content = JsonContent.Create(livro);
+            HttpResponseMessage response = await cliente.PostAsync("api/Livros", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Falha ao criar livro : " + response.StatusCode);
+            }
+
+        }
+
         public async Task<List<Livro>> GetLivrosAsync()
         {
             HttpResponseMessage response = await cliente.GetAsync("api/Livros");
@@ -31,6 +51,16 @@ namespace ConsoleAPI.Services
 
             return new List<Livro>();
 
+        }
+
+        public async Task DeleteLivroAsync(string idLivro)
+        {
+            HttpResponseMessage response = await cliente.DeleteAsync("api/Livros/" + idLivro);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Falha ao excluir o livro : " + response.StatusCode);
+            }
         }
     }
 }

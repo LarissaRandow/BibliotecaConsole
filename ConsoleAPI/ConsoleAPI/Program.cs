@@ -30,9 +30,9 @@ namespace ConsoleAPI
                 Console.WriteLine("1) Exibir Todos Os Livros");
                 Console.WriteLine("2) Pesquisar Por Gênero");
                 Console.WriteLine("3) Pesquisar Por Nome");
-                Console.WriteLine("4) Reservar Um Livro");
-                Console.WriteLine("5) Calcular Multa");
-                Console.WriteLine("6) Realizar Login");
+                Console.WriteLine("4) Reservar Um Livro"); 
+                Console.WriteLine("5) Calcular Multa"); //
+                Console.WriteLine("6) Realizar Login"); //
 
 
                 Console.Write("\r\nSelect an option: ");
@@ -47,6 +47,7 @@ namespace ConsoleAPI
                     case "3":
                         return true;
                     case "4":
+                        await CadastraReservaAsync();
                         return true;
                     case "5":
                         return true;
@@ -61,29 +62,30 @@ namespace ConsoleAPI
             {
                 Console.WriteLine("\r\nChoose an option:");
                 Console.WriteLine("1) Cadastrar Gênero");
-                Console.WriteLine("2) Pesquisar Gênero");
-                Console.WriteLine("3) Atualizar Gênero");
-                Console.WriteLine("4) Deletar Gênero");
+                Console.WriteLine("2) Pesquisar Gêneros");
+                Console.WriteLine("3) Atualizar Gênero"); //
+                //Console.WriteLine("4) Deletar Gênero");
                 WriteLine("\r");
-                Console.WriteLine("5) Cadastrar Livros");
-                Console.WriteLine("6) Atualizar Livro");
-                Console.WriteLine("7) Deletar Deletar");
+                Console.WriteLine("5) Cadastrar Livros"); 
+                Console.WriteLine("6) Atualizar Livro");  //
+                Console.WriteLine("7) Deletar Livro");
                 WriteLine("\r");
                 Console.WriteLine("8) Exibir Todos Os Livros");
-                Console.WriteLine("9) Pesquisar Por Gênero");
-                Console.WriteLine("10) Pesquisar Por Nome");
+                Console.WriteLine("9) Pesquisar Por Gênero"); //
+                Console.WriteLine("10) Pesquisar Por Nome"); //
                 WriteLine("\r");
-                Console.WriteLine("11) Pesquisar Reserva");
-                Console.WriteLine("12) Atualizar Reserva");
-                Console.WriteLine("13) Deletar Gênero");
+                Console.WriteLine("11) Pesquisar Reservas");
+                Console.WriteLine("12) Atualizar Reserva"); //
+                Console.WriteLine("13) Deletar Reserva");
                 WriteLine("\r");
-                Console.WriteLine("14) Calcular Multa");
+                Console.WriteLine("14) Calcular Multa"); //
 
                 Console.Write("\r\nSelect an option: ");
 
                 switch (Console.ReadLine())
                 {
                     case "1":
+                        await CadastraGeneroAsync();
                         return true;
                     case "2":
                         await TodosGenerosAsync();
@@ -91,12 +93,15 @@ namespace ConsoleAPI
                     case "3":
                         return true;
                     case "4":
+                        //await DeletarGeneroAsync();
                         return true;
                     case "5":
+                        await CadastraLivroAsync();
                         return true;
                     case "6":
                         return true;
                     case "7":
+                        await DeletarLivroAsync();
                         return true;
                     case "8":
                         await TodosLivrosAsync();
@@ -111,6 +116,7 @@ namespace ConsoleAPI
                     case "12":
                         return true;
                     case "13":
+                        await DeletarReservaAsync();
                         return true;
                     case "14":
                         return true;
@@ -135,6 +141,39 @@ namespace ConsoleAPI
             TaskContinuationOptions.OnlyOnRanToCompletion
             );
             WriteLine("-----------------------");
+        }
+
+        private static async Task CadastraGeneroAsync()
+        {
+            Write("\r\nNome: ");
+            string nome = ReadLine();
+
+            var repositorio = new GeneroService();
+            await repositorio.PostGenerosAsync(nome);
+        }
+
+        private static async Task CadastraLivroAsync()
+        {
+            Write("\r\nNome: ");
+            string nome = ReadLine();
+
+            Write("\r\nGenero Id: ");
+            int generoId = Convert.ToInt32(ReadLine());
+
+            var repositorio = new LivroService();
+            await repositorio.PostLivroAsync(nome, generoId);
+        }
+
+        private static async Task CadastraReservaAsync()
+        {
+            Write("\r\nCPF: ");
+            string nome = ReadLine();
+
+            Write("\r\nLivro Id: ");
+            int livroId = Convert.ToInt32(ReadLine());
+
+            var repositorio = new ReservaService();
+            await repositorio.PostReservaAsync(nome, livroId);
         }
 
         private static async Task TodosGenerosAsync()
@@ -170,19 +209,23 @@ namespace ConsoleAPI
             );
             WriteLine("-----------------------");
         }
+
+        private static async Task DeletarLivroAsync()
+        {
+            Write("\r\nLivro ID: ");
+            string id = ReadLine();
+
+            var repositorio = new LivroService();
+            await repositorio.DeleteLivroAsync(id);
+        }
+
+        private static async Task DeletarReservaAsync()
+        {
+            Write("\r\nReserva ID: ");
+            string id = ReadLine();
+
+            var repositorio = new ReservaService();
+            await repositorio.DeletarReservaAsync(id);
+        }
     }
 }
-
-
-//var repositorio = new ProdutoService();
-//var produtoTask = repositorio.GetProdutosAsync();
-
-//produtoTask.ContinueWith(task =>
-//{
-//    var produtos = task.Result;
-//    foreach (var p in produtos)
-//        WriteLine(p.ToString());
-//    Environment.Exit(0);
-//},
-//TaskContinuationOptions.OnlyOnRanToCompletion
-//);
