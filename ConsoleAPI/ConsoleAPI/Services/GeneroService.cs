@@ -33,7 +33,7 @@ namespace ConsoleAPI.Services
             return new List<Genero>();
         }
 
-        public async Task<List<Genero>> PostGenerosAsync(string nome)
+        public async Task PostGenerosAsync(string nome)
         {
             Genero genero = new Genero
             {
@@ -48,7 +48,23 @@ namespace ConsoleAPI.Services
                 throw new Exception("Falha ao criar gênero : " + response.StatusCode);
             }
 
-            return new List<Genero>();
+        }
+
+        public async Task PutGenerosAsync(string idGenero, string nome)
+        {
+            Genero genero = new Genero
+            {
+                Id = int.Parse(idGenero),
+                Nome = nome
+            };
+            JsonContent content = JsonContent.Create(genero);
+            HttpResponseMessage response = await cliente.PutAsync("api/Generos/" + idGenero, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Falha ao atualizar gênero : " + response.StatusCode);
+            }
+
         }
 
     }

@@ -53,6 +53,32 @@ namespace ConsoleAPI.Services
 
         }
 
+        public async Task<List<Livro>> GetLivroGenerosAsync(string generoId)
+        {
+            HttpResponseMessage response = await cliente.GetAsync("api/Livros/Genero?id=" + generoId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var dados = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Livro>>(dados);
+            }
+
+            return new List<Livro>();
+        }
+
+        public async Task<List<Livro>> GetLivroNomeAsync(string nome)
+        {
+            HttpResponseMessage response = await cliente.GetAsync("api/Livros/Nome?nome=" + nome);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var dados = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Livro>>(dados);
+            }
+
+            return new List<Livro>();
+        }
+
         public async Task DeleteLivroAsync(string idLivro)
         {
             HttpResponseMessage response = await cliente.DeleteAsync("api/Livros/" + idLivro);
@@ -61,6 +87,25 @@ namespace ConsoleAPI.Services
             {
                 throw new Exception("Falha ao excluir o livro : " + response.StatusCode);
             }
+        }
+
+        public async Task PutLivroAsync(string id, string nome, bool reservado, int generoId)
+        {
+            Livro livro = new Livro
+            {
+                Id = int.Parse(id),
+                Nome = nome,
+                Reservado = reservado,
+                Genero = generoId
+            };
+            JsonContent content = JsonContent.Create(livro);
+            HttpResponseMessage response = await cliente.PutAsync("api/Livros/" + id, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Falha ao criar livro : " + response.StatusCode);
+            }
+
         }
     }
 }

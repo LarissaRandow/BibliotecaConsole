@@ -63,19 +63,19 @@ namespace ConsoleAPI
                 Console.WriteLine("\r\nChoose an option:");
                 Console.WriteLine("1) Cadastrar Gênero");
                 Console.WriteLine("2) Pesquisar Gêneros");
-                Console.WriteLine("3) Atualizar Gênero"); //
+                Console.WriteLine("3) Atualizar Gênero");
                 //Console.WriteLine("4) Deletar Gênero");
                 WriteLine("\r");
                 Console.WriteLine("5) Cadastrar Livros"); 
-                Console.WriteLine("6) Atualizar Livro");  //
+                Console.WriteLine("6) Atualizar Livro");
                 Console.WriteLine("7) Deletar Livro");
                 WriteLine("\r");
                 Console.WriteLine("8) Exibir Todos Os Livros");
-                Console.WriteLine("9) Pesquisar Por Gênero"); //
-                Console.WriteLine("10) Pesquisar Por Nome"); //
+                Console.WriteLine("9) Pesquisar Por Gênero");
+                Console.WriteLine("10) Pesquisar Por Nome"); 
                 WriteLine("\r");
                 Console.WriteLine("11) Pesquisar Reservas");
-                Console.WriteLine("12) Atualizar Reserva"); //
+                Console.WriteLine("12) Atualizar Reserva");
                 Console.WriteLine("13) Deletar Reserva");
                 WriteLine("\r");
                 Console.WriteLine("14) Calcular Multa"); //
@@ -91,6 +91,7 @@ namespace ConsoleAPI
                         await TodosGenerosAsync();
                         return true;
                     case "3":
+                        await AtualizarGeneroAsync();
                         return true;
                     case "4":
                         //await DeletarGeneroAsync();
@@ -99,6 +100,7 @@ namespace ConsoleAPI
                         await CadastraLivroAsync();
                         return true;
                     case "6":
+                        await AtualizarLivroAsync();
                         return true;
                     case "7":
                         await DeletarLivroAsync();
@@ -107,8 +109,10 @@ namespace ConsoleAPI
                         await TodosLivrosAsync();
                         return true;
                     case "9":
+                        await PesquisarLivroGenero();
                         return true;
                     case "10":
+                        await PesquisarLivroNome();
                         return true;
                     case "11":
                         await TodosReservasAsync();
@@ -130,6 +134,48 @@ namespace ConsoleAPI
         {
             var repositorio = new LivroService();
             var livroTask = repositorio.GetLivrosAsync();
+            WriteLine("\r");
+            WriteLine("--------Lista----------");
+            await livroTask.ContinueWith(task =>
+            {
+                var livros = task.Result;
+                foreach (var p in livros)
+                    WriteLine(p.ToString());
+            },
+            TaskContinuationOptions.OnlyOnRanToCompletion
+            );
+            WriteLine("-----------------------");
+        }
+
+        private static async Task PesquisarLivroGenero()
+        {
+            Write("\r\nGenero Id: ");
+            string generoId = ReadLine();
+
+            var repositorio = new LivroService();
+            var livroTask = repositorio.GetLivroGenerosAsync(generoId);
+
+            WriteLine("\r");
+            WriteLine("--------Lista----------");
+            await livroTask.ContinueWith(task =>
+            {
+                var livros = task.Result;
+                foreach (var p in livros)
+                    WriteLine(p.ToString());
+            },
+            TaskContinuationOptions.OnlyOnRanToCompletion
+            );
+            WriteLine("-----------------------");
+        }
+
+        private static async Task PesquisarLivroNome()
+        {
+            Write("\r\nNome: ");
+            string nome = ReadLine();
+
+            var repositorio = new LivroService();
+            var livroTask = repositorio.GetLivroNomeAsync(nome);
+
             WriteLine("\r");
             WriteLine("--------Lista----------");
             await livroTask.ContinueWith(task =>
@@ -226,6 +272,35 @@ namespace ConsoleAPI
 
             var repositorio = new ReservaService();
             await repositorio.DeletarReservaAsync(id);
+        }
+
+        private static async Task AtualizarGeneroAsync()
+        {
+            Write("\r\nId: ");
+            string id = ReadLine();
+            Write("\r\nNome: ");
+            string nome = ReadLine();
+
+            var repositorio = new GeneroService();
+            await repositorio.PutGenerosAsync(id, nome);
+        }
+
+        private static async Task AtualizarLivroAsync()
+        {
+            Write("\r\nId: ");
+            string id = ReadLine();
+
+            Write("\r\nNome: ");
+            string nome = ReadLine();
+
+            Write("\r\nReservado: ");
+            bool reservado = Convert.ToBoolean(ReadLine());
+
+            Write("\r\nGenero Id: ");
+            int generoId = Convert.ToInt32(ReadLine());
+
+            var repositorio = new LivroService();
+            await repositorio.PutLivroAsync(id, nome, reservado, generoId);
         }
     }
 }
