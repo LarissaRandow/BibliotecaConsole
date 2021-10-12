@@ -34,6 +34,29 @@ namespace ConsoleAPI.Services
 
         }
 
+        public async Task<string> CalcularMulta(string id)
+        {
+            HttpResponseMessage response = await cliente.GetAsync("api/Reservas/" + id);
+
+            var mensagem = "Reserva dentro do prazo";
+            if (response.IsSuccessStatusCode)
+            {
+                
+                var dados = await response.Content.ReadAsStringAsync();
+                var reserva = JsonConvert.DeserializeObject<Reserva>(dados);
+
+                var diferença = DateTime.Today.Subtract(reserva.Data).TotalDays;
+                if (diferença > 0)
+                {
+                    mensagem = "Multa: R$" + Math.Floor(diferença);
+                }
+                    
+            }
+
+            return mensagem;
+
+        }
+
         public async Task PostReservaAsync(string cpf, int livroId)
         {
             Reserva reserva = new Reserva
@@ -65,6 +88,25 @@ namespace ConsoleAPI.Services
             {
                 Console.Write("Reservar Deleta com sucesso");
             }
+        }
+
+        public async Task PutReservaAsync(string idReserva, string cpf, string idLivro)
+        {
+            Reserva reserva = new Reserva
+            {
+                Id = int.Parse(idReserva),
+                Cpf = cpf,
+                Data = DateTime.Now,
+                Livro = int.Parse(idLivro)
+            };
+            JsonContent content = JsonContent.Create(reserva);
+            HttpResponseMessage response = await cliente.PutAsync("api/Reservas/" + idReserva, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Falha ao atualizar reserva : " + response.StatusCode);
+            }
+
         }
     }
 }
