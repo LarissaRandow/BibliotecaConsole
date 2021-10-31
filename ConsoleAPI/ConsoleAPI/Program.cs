@@ -17,17 +17,17 @@ namespace ConsoleAPI
 
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<Funcoes>();
-            Read();
+            //var summary = BenchmarkRunner.Run<Funcoes>();
+            //Read();
 
-            //bool showMenu = true;
-            //Task<bool> task;
-            //while (showMenu)
-            //{
-            //    task = MainMenuAsync();
-            //    task.Wait();
-            //    showMenu = task.Result;
-            //}
+            bool showMenu = true;
+            Task<bool> task;
+            while (showMenu)
+            {
+                task = MainMenuAsync();
+                task.Wait();
+                showMenu = task.Result;
+            }
 
         }
 
@@ -311,6 +311,7 @@ namespace ConsoleAPI
         {
             Write("\r\nReserva ID: ");
             string id = ReadLine();
+
 
             await repositorioReserva.CalcularMulta(id);
         }

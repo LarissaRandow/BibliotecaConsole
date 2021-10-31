@@ -40,7 +40,6 @@ namespace ConsoleAPI.Services
 
         }
 
-        [Benchmark]
         public async Task<List<Livro>> GetLivrosAsync()
         {
             HttpResponseMessage response = await cliente.GetAsync("api/Livros");

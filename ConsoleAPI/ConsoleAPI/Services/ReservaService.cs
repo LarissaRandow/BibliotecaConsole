@@ -52,7 +52,7 @@ namespace ConsoleAPI.Services
                 }
                     
             }
-
+            Console.WriteLine(mensagem);
             return mensagem;
 
         }
