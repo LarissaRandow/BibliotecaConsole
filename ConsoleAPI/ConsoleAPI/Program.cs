@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using ConsoleAPI.Services;
 using static System.Console;
 
 namespace ConsoleAPI
 {
-    class Program
+    public class Program
     {
         private static bool bibliotecario = false;
         private static LivroService repositorioLivro = new LivroService();
@@ -15,14 +17,17 @@ namespace ConsoleAPI
 
         static void Main(string[] args)
         {
-            bool showMenu = true;
-            Task<bool> task;
-            while (showMenu)
-            {
-                task = MainMenuAsync();
-                task.Wait();
-                showMenu = task.Result;
-            }
+            var summary = BenchmarkRunner.Run<Funcoes>();
+            Read();
+
+            //bool showMenu = true;
+            //Task<bool> task;
+            //while (showMenu)
+            //{
+            //    task = MainMenuAsync();
+            //    task.Wait();
+            //    showMenu = task.Result;
+            //}
 
         }
 
@@ -133,6 +138,27 @@ namespace ConsoleAPI
                     default:
                         return true;
                 }
+            }
+        }
+
+        public class Funcoes
+        {
+            [Benchmark]
+            public async Task TodosLivrosAsync()
+            {
+
+                var livroTask = repositorioLivro.GetLivrosAsync();
+                WriteLine("\r");
+                WriteLine("--------Lista----------");
+                await livroTask.ContinueWith(task =>
+                {
+                    var livros = task.Result;
+                    foreach (var p in livros)
+                        WriteLine(p.ToString());
+                },
+                TaskContinuationOptions.OnlyOnRanToCompletion
+                );
+                WriteLine("-----------------------");
             }
         }
 

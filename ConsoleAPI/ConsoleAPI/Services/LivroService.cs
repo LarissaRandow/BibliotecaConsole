@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
 using ConsoleAPI.Models;
 using Newtonsoft.Json;
 
@@ -39,6 +40,7 @@ namespace ConsoleAPI.Services
 
         }
 
+        [Benchmark]
         public async Task<List<Livro>> GetLivrosAsync()
         {
             HttpResponseMessage response = await cliente.GetAsync("api/Livros");
