@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using ConsoleAPI.Models;
 using ConsoleAPI.Services;
 using static System.Console;
 
@@ -17,18 +21,96 @@ namespace ConsoleAPI
 
         static void Main(string[] args)
         {
-            //var summary = BenchmarkRunner.Run<Funcoes>();
-            //Read();
+            var summary = BenchmarkRunner.Run<Funcoes>();
 
-            bool showMenu = true;
-            Task<bool> task;
-            while (showMenu)
+            //bool showMenu = true;
+            //Task<bool> task;
+            //while (showMenu)
+            //{
+            //    task = MainMenuAsync();
+            //    task.Wait();
+            //    showMenu = task.Result;
+            //}
+
+        }
+
+        [MemoryDiagnoser]
+        [RPlotExporter]
+        public class Funcoes
+        {
+            HttpClient cliente = new HttpClient();
+
+            public Funcoes()
             {
-                task = MainMenuAsync();
-                task.Wait();
-                showMenu = task.Result;
+                cliente.BaseAddress = new Uri("https://localhost:44390/");
+
+                 cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             }
 
+            [Benchmark]
+            public async Task CadastraGeneroAsync()
+            {
+                Genero genero = new Genero
+                {
+                    Id = 0,
+                    Nome = "teste"
+                };
+
+                JsonContent content = JsonContent.Create(genero);
+                HttpResponseMessage response = await cliente.PostAsync("api/Generos", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("Falha ao criar gênero : " + response.StatusCode);
+                }
+            }
+
+            [Benchmark]
+            public async Task TodosLivrosAsync()
+            {
+
+                var livroTask = repositorioLivro.GetLivrosAsync();
+                WriteLine("\r");
+                WriteLine("--------Lista----------");
+                await livroTask.ContinueWith(task =>
+                {
+                    var livros = task.Result;
+                    foreach (var p in livros)
+                        WriteLine(p.ToString());
+                },
+                TaskContinuationOptions.OnlyOnRanToCompletion
+                );
+                WriteLine("-----------------------");
+            }
+
+            [Benchmark]
+            public async Task AtualizarReservaAsync()
+            {
+                Reserva reserva = new Reserva
+                {
+                    Id = 32,
+                    Cpf = "15283886744",
+                    Data = DateTime.Now.AddDays(14),
+                    Livro = 7
+                };
+                JsonContent content = JsonContent.Create(reserva);
+                HttpResponseMessage response = await cliente.PutAsync("api/Reservas/" + 32, content);
+            }
+
+            [Benchmark]
+            public async Task DeletarReservaAsync()
+            {
+                HttpResponseMessage response = await cliente.DeleteAsync("api/Reservas/" + 28);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.Write("Falha ao excluir a reserva : " + response.StatusCode);
+                }
+                else
+                {
+                    Console.Write("Reservar Deleta com sucesso");
+                }
+            }
         }
 
         private static async Task<bool> MainMenuAsync()
@@ -141,26 +223,6 @@ namespace ConsoleAPI
             }
         }
 
-        public class Funcoes
-        {
-            [Benchmark]
-            public async Task TodosLivrosAsync()
-            {
-
-                var livroTask = repositorioLivro.GetLivrosAsync();
-                WriteLine("\r");
-                WriteLine("--------Lista----------");
-                await livroTask.ContinueWith(task =>
-                {
-                    var livros = task.Result;
-                    foreach (var p in livros)
-                        WriteLine(p.ToString());
-                },
-                TaskContinuationOptions.OnlyOnRanToCompletion
-                );
-                WriteLine("-----------------------");
-            }
-        }
 
         private static async Task Login()
         {
@@ -234,7 +296,7 @@ namespace ConsoleAPI
             Write("\r\nNome: ");
             string nome = ReadLine();
 
-            await repositorioGenero.PostGenerosAsync(nome);
+            //await repositorioGenero.PostGenerosAsync(nome);
         }
 
         private static async Task CadastraLivroAsync()

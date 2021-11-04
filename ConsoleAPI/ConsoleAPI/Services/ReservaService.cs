@@ -71,7 +71,7 @@ namespace ConsoleAPI.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Falha ao criar reserva : " + response.StatusCode);
+                Console.WriteLine("Falha ao criar reserva : " + response.StatusCode);
             }
 
         }
@@ -82,7 +82,7 @@ namespace ConsoleAPI.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Falha ao excluir a reserva : " + response.StatusCode);
+                Console.Write("Falha ao excluir a reserva : " + response.StatusCode);
             }
             else
             {
