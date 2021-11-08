@@ -90,15 +90,15 @@ namespace ConsoleAPI.Services
             }
         }
 
-        public async Task PutLivroAsync(string id, string nome, bool reservado, int generoId)
+        public async Task PutLivroAsync(string id, Livro livro)
         {
-            Livro livro = new Livro
-            {
-                Id = int.Parse(id),
-                Nome = nome,
-                Reservado = reservado,
-                Genero = generoId
-            };
+            //Livro livro = new Livro
+            //{
+            //    Id = int.Parse(id),
+            //    Nome = nome,
+            //    Reservado = reservado,
+            //    Genero = generoId
+            //};
             JsonContent content = JsonContent.Create(livro);
             HttpResponseMessage response = await cliente.PutAsync("api/Livros/" + id, content);
 

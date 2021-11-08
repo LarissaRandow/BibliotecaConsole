@@ -53,22 +53,16 @@ namespace ConsoleAPI
                 Genero genero = new Genero
                 {
                     Id = 0,
-                    Nome = "teste"
+                    Nome = "genero"
                 };
 
                 JsonContent content = JsonContent.Create(genero);
                 HttpResponseMessage response = await cliente.PostAsync("api/Generos", content);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception("Falha ao criar gênero : " + response.StatusCode);
-                }
             }
 
             [Benchmark]
             public async Task TodosLivrosAsync()
             {
-
                 var livroTask = repositorioLivro.GetLivrosAsync();
                 WriteLine("\r");
                 WriteLine("--------Lista----------");
@@ -84,32 +78,23 @@ namespace ConsoleAPI
             }
 
             [Benchmark]
-            public async Task AtualizarReservaAsync()
+            public async Task AtualizarLivroAsync()
             {
-                Reserva reserva = new Reserva
+                Livro livro = new Livro
                 {
-                    Id = 32,
-                    Cpf = "15283886744",
-                    Data = DateTime.Now.AddDays(14),
-                    Livro = 7
+                    Id = 7,
+                    Nome = "nome",
+                    Reservado = false,
+                    Genero = 1
                 };
-                JsonContent content = JsonContent.Create(reserva);
-                HttpResponseMessage response = await cliente.PutAsync("api/Reservas/" + 32, content);
+
+                await repositorioLivro.PutLivroAsync("7", livro);
             }
 
             [Benchmark]
             public async Task DeletarReservaAsync()
             {
-                HttpResponseMessage response = await cliente.DeleteAsync("api/Reservas/" + 28);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.Write("Falha ao excluir a reserva : " + response.StatusCode);
-                }
-                else
-                {
-                    Console.Write("Reservar Deleta com sucesso");
-                }
+                HttpResponseMessage response = await cliente.DeleteAsync("api/Reservas/" + 33);
             }
         }
 
@@ -414,7 +399,7 @@ namespace ConsoleAPI
             Write("\r\nGenero Id: ");
             int generoId = Convert.ToInt32(ReadLine());
 
-            await repositorioLivro.PutLivroAsync(id, nome, reservado, generoId);
+            //await repositorioLivro.PutLivroAsync(id, nome, reservado, generoId);
         }
     }
 }
